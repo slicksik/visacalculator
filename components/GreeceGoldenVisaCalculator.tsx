@@ -312,7 +312,7 @@ export default function GreeceGoldenVisaCalculator() {
                   <Checkbox 
                     id="express" 
                     checked={expressProcessing}
-                    onCheckedChange={(checked) => setExpressProcessing(checked as boolean)}
+                    onChange={(e) => setExpressProcessing(e.target.checked)}
                     className="mt-1"
                   />
                   <div className="flex-1">
@@ -329,7 +329,7 @@ export default function GreeceGoldenVisaCalculator() {
                   <Checkbox 
                     id="poa" 
                     checked={powerOfAttorney}
-                    onCheckedChange={(checked) => setPowerOfAttorney(checked as boolean)}
+                    onChange={(e) => setPowerOfAttorney(e.target.checked)}
                     className="mt-1"
                   />
                   <div className="flex-1">
@@ -346,7 +346,7 @@ export default function GreeceGoldenVisaCalculator() {
                   <Checkbox 
                     id="health" 
                     checked={useMaxHealthInsurance}
-                    onCheckedChange={(checked) => setUseMaxHealthInsurance(checked as boolean)}
+                    onChange={(e) => setUseMaxHealthInsurance(e.target.checked)}
                     className="mt-1"
                   />
                   <div className="flex-1">
