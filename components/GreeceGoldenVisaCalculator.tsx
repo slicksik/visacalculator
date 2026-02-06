@@ -12,27 +12,29 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as ChartTooltip } fro
 import { Info, TrendingUp, Users, Home, AlertCircle, FileText, Banknote } from 'lucide-react';
 
 const GREECE_TIERS = [
-  { 
-    id: 'tier-800', 
-    label: 'Prime Zone', 
-    subtitle: 'Athens, Thessaloniki, Mykonos, Santorini',
-    minInvestment: 800000,
-    description: 'Includes islands > 3,100 residents. Single property ≥ 120sqm.' 
-  },
-  { 
-    id: 'tier-400', 
-    label: 'Standard Zone', 
-    subtitle: 'Rest of Greece',
-    minInvestment: 400000,
-    description: 'Regional mainland and small islands. Single property ≥ 120sqm.' 
-  },
-  { 
-    id: 'tier-250', 
-    label: 'Conversion/Restoration', 
+
+  {
+    id: 'tier-250',
+    label: 'Conversion/Restoration',
     subtitle: 'Nationwide',
     minInvestment: 250000,
-    description: 'Commercial-to-residential conversion or listed building restoration.' 
+    description: 'Commercial-to-residential conversion or listed building restoration.'
   },
+  {
+    id: 'tier-400',
+    label: 'Standard Zone',
+    subtitle: 'Rest of Greece',
+    minInvestment: 400000,
+    description: 'Regional mainland and small islands. Single property ≥ 120sqm.'
+  },
+  {
+    id: 'tier-800',
+    label: 'Prime Zone',
+    subtitle: 'Athens, Thessaloniki, Mykonos, Santorini',
+    minInvestment: 800000,
+    description: 'Includes islands > 3,100 residents. Single property ≥ 120sqm.'
+  },
+
 ];
 
 const VAT_RATE = 0.24;
@@ -44,7 +46,7 @@ const FEE_RATES = {
   NOTARY_FEE: 0.01,                       // 1% + 24% VAT
   LAWYER_PROPERTY_FEE: 0.01,              // 1% + 24% VAT
   GOVERNMENT_REGISTRATION: 0.008,         // 0.8%
-  
+
   // Residence Permit Costs
   PERMIT_APPLICATION_PREP: 2000,          // Legal service fee
   PERMIT_CARD_MAIN: 2016,                 // Main applicant card
@@ -52,13 +54,13 @@ const FEE_RATES = {
   HEALTH_INSURANCE_MIN: 80,               // Per person (age-based: €80-110)
   HEALTH_INSURANCE_MAX: 110,
   TRANSLATION_COSTS: 300,
-  
+
   // Additional Costs
   BANK_ACCOUNT_TAX_NUMBER: 300,
   LEGAL_CHECK_FEE: 150,                   // Only if property not suitable
   POWER_OF_ATTORNEY_MIN: 150,             // €150-200
   POWER_OF_ATTORNEY_MAX: 200,
-  
+
   // Optional
   EXPRESS_PROCESSING: 3000,               // Optional faster processing
 };
@@ -76,58 +78,58 @@ export default function GreeceGoldenVisaCalculator() {
 
   const stats = useMemo(() => {
     const tier = GREECE_TIERS.find(t => t.id === tierId)!;
-    const purchasePrice = customPrice && Number(customPrice) > 0 
+    const purchasePrice = customPrice && Number(customPrice) > 0
       ? Math.max(Number(customPrice), tier.minInvestment)
       : tier.minInvestment;
-    
+
     // === PROPERTY ACQUISITION COSTS ===
     const transferTax = purchasePrice * FEE_RATES.TRANSFER_TAX;
     const realEstateConsultancy = purchasePrice * FEE_RATES.REAL_ESTATE_CONSULTANCY;
-    
+
     // Notary fee (1% + 24% VAT)
     const notaryFeeBase = purchasePrice * FEE_RATES.NOTARY_FEE;
     const notaryVAT = notaryFeeBase * VAT_RATE;
     const notaryFeeTotal = notaryFeeBase + notaryVAT;
-    
+
     // Lawyer's property purchase service fee (1% + 24% VAT)
     const lawyerFeeBase = purchasePrice * FEE_RATES.LAWYER_PROPERTY_FEE;
     const lawyerVAT = lawyerFeeBase * VAT_RATE;
     const lawyerFeeTotal = lawyerFeeBase + lawyerVAT;
-    
+
     const governmentRegistration = purchasePrice * FEE_RATES.GOVERNMENT_REGISTRATION;
-    
-    const totalPropertyCosts = transferTax + realEstateConsultancy + notaryFeeTotal + 
-                               lawyerFeeTotal + governmentRegistration;
-    
+
+    const totalPropertyCosts = transferTax + realEstateConsultancy + notaryFeeTotal +
+      lawyerFeeTotal + governmentRegistration;
+
     // === RESIDENCE PERMIT COSTS ===
     const permitApplicationPrep = FEE_RATES.PERMIT_APPLICATION_PREP;
     const permitCardMain = FEE_RATES.PERMIT_CARD_MAIN;
     const totalFamilyMembers = adults + minors;
     const permitCardDependents = FEE_RATES.PERMIT_CARD_DEPENDENT * Math.max(0, totalFamilyMembers - 1);
-    
-    const healthInsuranceRate = useMaxHealthInsurance 
-      ? FEE_RATES.HEALTH_INSURANCE_MAX 
+
+    const healthInsuranceRate = useMaxHealthInsurance
+      ? FEE_RATES.HEALTH_INSURANCE_MAX
       : FEE_RATES.HEALTH_INSURANCE_MIN;
     const healthInsurance = healthInsuranceRate * totalFamilyMembers;
-    
+
     const translationCosts = FEE_RATES.TRANSLATION_COSTS;
     const expressProcessingFee = expressProcessing ? FEE_RATES.EXPRESS_PROCESSING : 0;
-    
-    const totalPermitCosts = permitApplicationPrep + permitCardMain + permitCardDependents + 
-                            healthInsurance + translationCosts + expressProcessingFee;
-    
+
+    const totalPermitCosts = permitApplicationPrep + permitCardMain + permitCardDependents +
+      healthInsurance + translationCosts + expressProcessingFee;
+
     // === ADDITIONAL COSTS ===
     const bankAccountTaxNumber = FEE_RATES.BANK_ACCOUNT_TAX_NUMBER;
-    
+
     let powerOfAttorneyFee = 0;
     if (powerOfAttorney) {
       const poaBase = FEE_RATES.POWER_OF_ATTORNEY_MAX; // Using max value
       const poaVAT = poaBase * VAT_RATE; // 24% VAT if paid via bank transfer
       powerOfAttorneyFee = poaBase + poaVAT;
     }
-    
+
     const totalAdditionalCosts = bankAccountTaxNumber + powerOfAttorneyFee;
-    
+
     // === GRAND TOTAL ===
     const grandTotal = purchasePrice + totalPropertyCosts + totalPermitCosts + totalAdditionalCosts;
 
@@ -168,8 +170,8 @@ export default function GreeceGoldenVisaCalculator() {
       },
     };
 
-    return { 
-      tier, 
+    return {
+      tier,
       purchasePrice,
       totalPropertyCosts,
       totalPermitCosts,
@@ -248,8 +250,8 @@ export default function GreeceGoldenVisaCalculator() {
 
                 <div className="space-y-3">
                   <Label className="text-base font-semibold">Property Purchase Price (€)</Label>
-                  <Input 
-                    type="text" 
+                  <Input
+                    type="text"
                     placeholder={`Min: €${stats.tier.minInvestment.toLocaleString()}`}
                     value={customPrice}
                     onChange={(e) => handlePriceChange(e.target.value)}
@@ -274,22 +276,22 @@ export default function GreeceGoldenVisaCalculator() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Adult Applicants (18+)</Label>
-                    <Input 
-                      type="number" 
-                      min={1} 
-                      value={adults} 
-                      onChange={(e) => setAdults(Math.max(1, Number(e.target.value)))} 
+                    <Input
+                      type="number"
+                      min={1}
+                      value={adults}
+                      onChange={(e) => setAdults(Math.max(1, Number(e.target.value)))}
                       className="h-11"
                     />
                     <p className="text-xs text-muted-foreground">Includes main applicant</p>
                   </div>
                   <div className="space-y-2">
                     <Label>Minor Children (Under 18)</Label>
-                    <Input 
-                      type="number" 
-                      min={0} 
-                      value={minors} 
-                      onChange={(e) => setMinors(Math.max(0, Number(e.target.value)))} 
+                    <Input
+                      type="number"
+                      min={0}
+                      value={minors}
+                      onChange={(e) => setMinors(Math.max(0, Number(e.target.value)))}
                       className="h-11"
                     />
                     <p className="text-xs text-muted-foreground">€166 per permit card</p>
@@ -312,8 +314,8 @@ export default function GreeceGoldenVisaCalculator() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-slate-50 transition-colors">
-                  <Checkbox 
-                    id="express" 
+                  <Checkbox
+                    id="express"
                     checked={expressProcessing}
                     onChange={(e) => setExpressProcessing(e.target.checked)}
                     className="mt-1"
@@ -329,8 +331,8 @@ export default function GreeceGoldenVisaCalculator() {
                 </div>
 
                 <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-slate-50 transition-colors">
-                  <Checkbox 
-                    id="poa" 
+                  <Checkbox
+                    id="poa"
                     checked={powerOfAttorney}
                     onChange={(e) => setPowerOfAttorney(e.target.checked)}
                     className="mt-1"
@@ -346,8 +348,8 @@ export default function GreeceGoldenVisaCalculator() {
                 </div>
 
                 <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-slate-50 transition-colors">
-                  <Checkbox 
-                    id="health" 
+                  <Checkbox
+                    id="health"
                     checked={useMaxHealthInsurance}
                     onChange={(e) => setUseMaxHealthInsurance(e.target.checked)}
                     className="mt-1"
@@ -398,7 +400,7 @@ export default function GreeceGoldenVisaCalculator() {
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <ChartTooltip 
+                      <ChartTooltip
                         formatter={(value: number) => `€${value.toLocaleString()}`}
                         contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
                       />
@@ -431,7 +433,7 @@ export default function GreeceGoldenVisaCalculator() {
                     <TabsTrigger value="permit">Permit</TabsTrigger>
                     <TabsTrigger value="additional">Additional</TabsTrigger>
                   </TabsList>
-                  
+
                   <TabsContent value="property" className="space-y-3 pt-4">
                     <div className="space-y-2.5">
                       <div className="flex justify-between text-sm font-semibold bg-slate-100 p-2 rounded">
@@ -464,7 +466,7 @@ export default function GreeceGoldenVisaCalculator() {
                       </div>
                     </div>
                   </TabsContent>
-                  
+
                   <TabsContent value="permit" className="space-y-3 pt-4">
                     <div className="space-y-2.5">
                       <div className="flex justify-between text-sm">
@@ -501,7 +503,7 @@ export default function GreeceGoldenVisaCalculator() {
                       </div>
                     </div>
                   </TabsContent>
-                  
+
                   <TabsContent value="additional" className="space-y-3 pt-4">
                     <div className="space-y-2.5">
                       <div className="flex justify-between text-sm">
