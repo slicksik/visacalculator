@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -221,7 +221,10 @@ export default function GreeceGoldenVisaCalculator() {
                   <Label className="text-base font-semibold">Investment Zone</Label>
                   <Select value={tierId} onValueChange={setTierId}>
                     <SelectTrigger className="h-auto py-3">
-                      <SelectValue />
+                      <div className="text-left">
+                        <div className="font-semibold">{stats.tier.label}</div>
+                        <div className="text-xs text-muted-foreground">{stats.tier.subtitle}</div>
+                      </div>
                     </SelectTrigger>
                     <SelectContent>
                       {GREECE_TIERS.map(t => (
