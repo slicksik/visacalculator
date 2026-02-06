@@ -588,7 +588,7 @@ export default function GreeceGoldenVisaCalculator() {
             <div className="space-y-2">
               <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Processing & Timeline</h4>
               <ul className="text-sm space-y-1.5 list-disc list-inside text-slate-700">
-                <li>Processing: 2-4 months typically</li>
+                <li>Processing: 6-8 months typically</li>
                 <li>Express option available (+€3,000)</li>
                 <li>No work rights (investments allowed)</li>
                 <li>Tax residency: 183+ days/year</li>
@@ -599,7 +599,7 @@ export default function GreeceGoldenVisaCalculator() {
 
         <div className="text-center text-sm text-muted-foreground pb-8 space-y-2">
           <p className="font-medium">All fees based on official Law 5100/2024 and current market rates (2026).</p>
-          <p>This calculator provides detailed estimates. Consult with licensed immigration attorneys and tax advisors for personalized guidance.</p>
+          <p>This calculator provides detailed estimates. Consult with our team of licensed immigration attorneys and tax advisors for personalized guidance.</p>
         </div>
       </div>
     </div>
