@@ -84,7 +84,11 @@ export default function GreeceGoldenVisaCalculator() {
 
     // === PROPERTY ACQUISITION COSTS ===
     const transferTax = purchasePrice * FEE_RATES.TRANSFER_TAX;
-    const realEstateConsultancy = purchasePrice * FEE_RATES.REAL_ESTATE_CONSULTANCY;
+
+    // Real Estate Consultancy (2% + 24% VAT)
+    const realEstateConsultancyBase = purchasePrice * FEE_RATES.REAL_ESTATE_CONSULTANCY;
+    const realEstateConsultancyVAT = realEstateConsultancyBase * VAT_RATE;
+    const realEstateConsultancyTotal = realEstateConsultancyBase + realEstateConsultancyVAT;
 
     // Notary fee (1% + 24% VAT)
     const notaryFeeBase = purchasePrice * FEE_RATES.NOTARY_FEE;
@@ -98,7 +102,7 @@ export default function GreeceGoldenVisaCalculator() {
 
     const governmentRegistration = purchasePrice * FEE_RATES.GOVERNMENT_REGISTRATION;
 
-    const totalPropertyCosts = transferTax + realEstateConsultancy + notaryFeeTotal +
+    const totalPropertyCosts = transferTax + realEstateConsultancyTotal + notaryFeeTotal +
       lawyerFeeTotal + governmentRegistration;
 
     // === RESIDENCE PERMIT COSTS ===
@@ -137,7 +141,7 @@ export default function GreeceGoldenVisaCalculator() {
     const chartData = [
       { name: 'Property Purchase', value: purchasePrice },
       { name: 'Transfer Tax (3.09%)', value: transferTax },
-      { name: 'Professional Fees', value: realEstateConsultancy + notaryFeeTotal + lawyerFeeTotal },
+      { name: 'Professional Fees', value: realEstateConsultancyTotal + notaryFeeTotal + lawyerFeeTotal },
       { name: 'Gov Registration (0.8%)', value: governmentRegistration },
       { name: 'Permit & Cards', value: permitApplicationPrep + permitCardMain + permitCardDependents + expressProcessingFee },
       { name: 'Health & Translation', value: healthInsurance + translationCosts },
@@ -148,7 +152,7 @@ export default function GreeceGoldenVisaCalculator() {
       property: {
         purchasePrice,
         transferTax,
-        realEstateConsultancy,
+        realEstateConsultancy: { base: realEstateConsultancyBase, vat: realEstateConsultancyVAT, total: realEstateConsultancyTotal },
         notaryFee: { base: notaryFeeBase, vat: notaryVAT, total: notaryFeeTotal },
         lawyerFee: { base: lawyerFeeBase, vat: lawyerVAT, total: lawyerFeeTotal },
         governmentRegistration,
@@ -446,7 +450,7 @@ export default function GreeceGoldenVisaCalculator() {
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Real Estate Consultancy (2% + VAT)</span>
-                        <span className="font-medium">€{stats.breakdown.property.realEstateConsultancy.toLocaleString()}</span>
+                        <span className="font-medium">€{stats.breakdown.property.realEstateConsultancy.total.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Notary Fee (1% + VAT)</span>
