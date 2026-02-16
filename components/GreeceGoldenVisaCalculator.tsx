@@ -84,7 +84,7 @@ export default function GreeceGoldenVisaCalculator() {
 
     // === PROPERTY ACQUISITION COSTS ===
     const transferTax = purchasePrice * FEE_RATES.TRANSFER_TAX;
-    const realEstateConsultancy = (purchasePrice * FEE_RATES.REAL_ESTATE_CONSULTANCY) * VAT_RATE;
+    const realEstateConsultancy = purchasePrice * FEE_RATES.REAL_ESTATE_CONSULTANCY;
 
     // Notary fee (1% + 24% VAT)
     const notaryFeeBase = purchasePrice * FEE_RATES.NOTARY_FEE;
@@ -445,7 +445,7 @@ export default function GreeceGoldenVisaCalculator() {
                         <span className="font-medium">€{stats.breakdown.property.transferTax.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Real Estate Consultancy (2%)</span>
+                        <span className="text-muted-foreground">Real Estate Consultancy (2% + VAT)</span>
                         <span className="font-medium">€{stats.breakdown.property.realEstateConsultancy.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-sm">
