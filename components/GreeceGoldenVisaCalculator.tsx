@@ -84,7 +84,7 @@ export default function GreeceGoldenVisaCalculator() {
 
     // === PROPERTY ACQUISITION COSTS ===
     const transferTax = purchasePrice * FEE_RATES.TRANSFER_TAX;
-    const realEstateConsultancy = purchasePrice * FEE_RATES.REAL_ESTATE_CONSULTANCY;
+    const realEstateConsultancy = (purchasePrice * FEE_RATES.REAL_ESTATE_CONSULTANCY) * VAT_RATE;
 
     // Notary fee (1% + 24% VAT)
     const notaryFeeBase = purchasePrice * FEE_RATES.NOTARY_FEE;
