@@ -2,15 +2,16 @@ import { redirect } from "next/navigation";
 import { isLocale, Locale, slugs } from "@/lib/i18n";
 
 type PageParams = {
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 };
 
-export default function LocaleIndexPage({ params }: PageParams) {
-  if (!isLocale(params.locale)) {
+export default async function LocaleIndexPage({ params }: PageParams) {
+  const resolved = await params;
+  if (!isLocale(resolved.locale)) {
     redirect(`/en/${slugs.en}`);
   }
-  const locale = params.locale as Locale;
+  const locale = resolved.locale as Locale;
   redirect(`/${locale}/${slugs[locale]}`);
 }

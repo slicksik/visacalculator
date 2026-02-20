@@ -6,10 +6,10 @@ import { descriptions, isLocale, Locale, slugs, titles } from "@/lib/i18n";
 const SITE_URL = "https://visacalculator-two.vercel.app";
 
 type PageParams = {
-  params: {
+  params: Promise<{
     locale: string;
     slug: string;
-  };
+  }>;
 };
 
 export function generateStaticParams() {
@@ -20,10 +20,11 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
-  if (!isLocale(params.locale)) return {};
-  const locale = params.locale as Locale;
+  const resolved = await params;
+  if (!isLocale(resolved.locale)) return {};
+  const locale = resolved.locale as Locale;
   const expectedSlug = slugs[locale];
-  if (params.slug !== expectedSlug) return {};
+  if (resolved.slug !== expectedSlug) return {};
 
   const path = `/${locale}/${expectedSlug}`;
   return {
@@ -46,10 +47,11 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   };
 }
 
-export default function LocalizedCalculatorPage({ params }: PageParams) {
-  if (!isLocale(params.locale)) notFound();
-  const locale = params.locale as Locale;
-  if (params.slug !== slugs[locale]) notFound();
+export default async function LocalizedCalculatorPage({ params }: PageParams) {
+  const resolved = await params;
+  if (!isLocale(resolved.locale)) notFound();
+  const locale = resolved.locale as Locale;
+  if (resolved.slug !== slugs[locale]) notFound();
 
   return <GreeceGoldenVisaCalculator locale={locale} />;
 }
