@@ -50,7 +50,8 @@ const FEE_RATES = {
   // Residence Permit Costs
   PERMIT_APPLICATION_PREP: 2000,          // Legal service fee
   PERMIT_CARD_MAIN: 2016,                 // Main applicant card
-  PERMIT_CARD_DEPENDENT: 166,             // Per family member
+  PERMIT_CARD_CHILD_15_PLUS: 150,         // Per child (15+)
+  PERMIT_CARD_CHILD_UNDER_15: 16,         // Per child (<15)
   HEALTH_INSURANCE_MIN: 80,               // Per person (age-based: €80-110)
   HEALTH_INSURANCE_MAX: 110,
   TRANSLATION_COSTS: 300,
@@ -70,7 +71,8 @@ const COLORS = ['#1e40af', '#3b82f6', '#60a5fa', '#93c5fd', '#10b981', '#f59e0b'
 export default function GreeceGoldenVisaCalculator() {
   const [tierId, setTierId] = useState(GREECE_TIERS[0].id);
   const [adults, setAdults] = useState(1);
-  const [minors, setMinors] = useState(0);
+  const [children15Plus, setChildren15Plus] = useState(0);
+  const [childrenUnder15, setChildrenUnder15] = useState(0);
   const [customPrice, setCustomPrice] = useState<string>('');
   const [expressProcessing, setExpressProcessing] = useState(false);
   const [powerOfAttorney, setPowerOfAttorney] = useState(false);
@@ -108,8 +110,9 @@ export default function GreeceGoldenVisaCalculator() {
     // === RESIDENCE PERMIT COSTS ===
     const permitApplicationPrep = FEE_RATES.PERMIT_APPLICATION_PREP;
     const permitCardMain = FEE_RATES.PERMIT_CARD_MAIN;
-    const totalFamilyMembers = adults + minors;
-    const permitCardDependents = FEE_RATES.PERMIT_CARD_DEPENDENT * Math.max(0, totalFamilyMembers - 1);
+    const totalFamilyMembers = adults + children15Plus + childrenUnder15;
+    const permitCardDependents = (children15Plus * FEE_RATES.PERMIT_CARD_CHILD_15_PLUS) +
+      (childrenUnder15 * FEE_RATES.PERMIT_CARD_CHILD_UNDER_15);
 
     const healthInsuranceRate = useMaxHealthInsurance
       ? FEE_RATES.HEALTH_INSURANCE_MAX
@@ -185,7 +188,7 @@ export default function GreeceGoldenVisaCalculator() {
       breakdown,
       totalFamilyMembers,
     };
-  }, [tierId, adults, minors, customPrice, expressProcessing, powerOfAttorney, useMaxHealthInsurance]);
+  }, [tierId, adults, children15Plus, childrenUnder15, customPrice, expressProcessing, powerOfAttorney, useMaxHealthInsurance]);
 
   const handlePriceChange = (value: string) => {
     if (value === '' || !isNaN(Number(value))) {
@@ -274,10 +277,10 @@ export default function GreeceGoldenVisaCalculator() {
                   <Users className="w-5 h-5" />
                   Family Members
                 </CardTitle>
-                <CardDescription>Number of applicants for the visa</CardDescription>
+                <CardDescription>Applicants by age group</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label>Adult Applicants (18+)</Label>
                     <Input
@@ -290,15 +293,26 @@ export default function GreeceGoldenVisaCalculator() {
                     <p className="text-xs text-muted-foreground">Includes main applicant</p>
                   </div>
                   <div className="space-y-2">
-                    <Label>Minor Children (Under 18)</Label>
+                    <Label>Children 15+ (15-17)</Label>
                     <Input
                       type="number"
                       min={0}
-                      value={minors}
-                      onChange={(e) => setMinors(Math.max(0, Number(e.target.value)))}
+                      value={children15Plus}
+                      onChange={(e) => setChildren15Plus(Math.max(0, Number(e.target.value)))}
                       className="h-11"
                     />
-                    <p className="text-xs text-muted-foreground">€166 per permit card</p>
+                    <p className="text-xs text-muted-foreground">€150 per child</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Children Under 15</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={childrenUnder15}
+                      onChange={(e) => setChildrenUnder15(Math.max(0, Number(e.target.value)))}
+                      className="h-11"
+                    />
+                    <p className="text-xs text-muted-foreground">€16 per child</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 p-3 bg-slate-100 rounded-lg">
@@ -483,7 +497,9 @@ export default function GreeceGoldenVisaCalculator() {
                       </div>
                       {stats.breakdown.permit.permitCardDependents > 0 && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Dependent Cards ({stats.totalFamilyMembers - 1})</span>
+                          <span className="text-muted-foreground">
+                            Children Cards ({children15Plus + childrenUnder15})
+                          </span>
                           <span className="font-medium">€{stats.breakdown.permit.permitCardDependents.toLocaleString()}</span>
                         </div>
                       )}
