@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Locale, localeToIntl, slugs, tiers, ui } from "@/lib/i18n";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -95,7 +96,10 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
   const [powerOfAttorney, setPowerOfAttorney] = useState(false);
   const [useMaxHealthInsurance, setUseMaxHealthInsurance] = useState(false);
   const [flashTotals, setFlashTotals] = useState(false);
+  const [copied, setCopied] = useState(false);
   const didMount = useRef(false);
+  const didInit = useRef(false);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!didMount.current) {
@@ -106,6 +110,42 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
     const timeout = setTimeout(() => setFlashTotals(false), 550);
     return () => clearTimeout(timeout);
   }, [tierId, adults, children15Plus, childrenUnder15, customPrice, powerOfAttorney, useMaxHealthInsurance]);
+
+  useEffect(() => {
+    if (didInit.current) return;
+    didInit.current = true;
+
+    const tier = searchParams.get("tier");
+    if (tier && GREECE_TIERS.some((t) => t.id === tier)) {
+      setTierId(tier);
+    }
+
+    const adultsParam = Number(searchParams.get("adults"));
+    if (!Number.isNaN(adultsParam)) {
+      setAdults(Math.max(1, Math.floor(adultsParam)));
+    }
+
+    const c15 = Number(searchParams.get("c15"));
+    if (!Number.isNaN(c15)) {
+      setChildren15Plus(Math.max(0, Math.floor(c15)));
+    }
+
+    const cu15 = Number(searchParams.get("cu15"));
+    if (!Number.isNaN(cu15)) {
+      setChildrenUnder15(Math.max(0, Math.floor(cu15)));
+    }
+
+    const price = searchParams.get("price");
+    if (price !== null && (price === "" || !isNaN(Number(price)))) {
+      setCustomPrice(price);
+    }
+
+    const poa = searchParams.get("poa");
+    if (poa === "1") setPowerOfAttorney(true);
+
+    const health = searchParams.get("health");
+    if (health === "1") setUseMaxHealthInsurance(true);
+  }, [searchParams]);
 
   const stats = useMemo(() => {
     const tier = GREECE_TIERS.find(t => t.id === tierId)!;
@@ -235,6 +275,29 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
     setUseMaxHealthInsurance(false);
   };
 
+  const handleShare = async () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("tier", tierId);
+    url.searchParams.set("adults", String(adults));
+    url.searchParams.set("c15", String(children15Plus));
+    url.searchParams.set("cu15", String(childrenUnder15));
+    if (customPrice === "") {
+      url.searchParams.delete("price");
+    } else {
+      url.searchParams.set("price", customPrice);
+    }
+    url.searchParams.set("poa", powerOfAttorney ? "1" : "0");
+    url.searchParams.set("health", useMaxHealthInsurance ? "1" : "0");
+
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    } catch {
+      window.prompt(t.shareLink, url.toString());
+    }
+  };
+
   const totalFlashClass = flashTotals ? "bg-emerald-50 dark:bg-emerald-900/20" : "";
 
   const InfoTip = ({ text }: { text: string }) => (
@@ -331,6 +394,13 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
               >
                 <RotateCcw className="w-4 h-4" />
                 {t.resetInputs}
+              </button>
+              <button
+                type="button"
+                onClick={handleShare}
+                className="ml-2 inline-flex items-center gap-2 px-3 py-2 rounded-md border border-border text-sm font-medium hover:bg-accent transition-colors"
+              >
+                {copied ? t.copied : t.shareLink}
               </button>
             </div>
             <Card className="shadow-lg" id="step-zone">
