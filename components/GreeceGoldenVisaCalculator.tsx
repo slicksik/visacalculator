@@ -301,17 +301,21 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
 
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-sm">
           {[
-            { step: "1", label: t.stepChooseZone },
-            { step: "2", label: t.stepFamily },
-            { step: "3", label: t.stepOptions },
-            { step: "4", label: t.stepSummary },
+            { step: "1", label: t.stepChooseZone, href: "#step-zone" },
+            { step: "2", label: t.stepFamily, href: "#step-family" },
+            { step: "3", label: t.stepOptions, href: "#step-options" },
+            { step: "4", label: t.stepSummary, href: "#step-summary" },
           ].map((item) => (
-            <div key={item.step} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card">
+            <a
+              key={item.step}
+              href={item.href}
+              className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:bg-accent transition-colors"
+            >
               <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-semibold">
                 {item.step}
               </div>
               <div className="font-medium">{item.label}</div>
-            </div>
+            </a>
           ))}
         </div>
 
@@ -329,7 +333,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                 {t.resetInputs}
               </button>
             </div>
-            <Card className="shadow-lg">
+            <Card className="shadow-lg" id="step-zone">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Home className="w-5 h-5" />
@@ -385,7 +389,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
               </CardContent>
             </Card>
 
-            <Card className="shadow-lg">
+            <Card className="shadow-lg" id="step-family">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="w-5 h-5" />
@@ -448,7 +452,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
               </CardContent>
             </Card>
 
-            <Card className="shadow-lg">
+            <Card className="shadow-lg" id="step-options">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="w-5 h-5" />
@@ -503,7 +507,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
 
           {/* Right Column: Results */}
           <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-6 self-start">
-            <Card className="shadow-xl border-2 border-border">
+            <Card className="shadow-xl border-2 border-border" id="step-summary">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
                   {t.totalInvestment}
