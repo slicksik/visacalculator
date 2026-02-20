@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from "next/link";
 import { Locale, localeToIntl, slugs, tiers, ui } from "@/lib/i18n";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -94,6 +94,18 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
   const [customPrice, setCustomPrice] = useState<string>('');
   const [powerOfAttorney, setPowerOfAttorney] = useState(false);
   const [useMaxHealthInsurance, setUseMaxHealthInsurance] = useState(false);
+  const [flashTotals, setFlashTotals] = useState(false);
+  const didMount = useRef(false);
+
+  useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      return;
+    }
+    setFlashTotals(true);
+    const timeout = setTimeout(() => setFlashTotals(false), 550);
+    return () => clearTimeout(timeout);
+  }, [tierId, adults, children15Plus, childrenUnder15, customPrice, powerOfAttorney, useMaxHealthInsurance]);
 
   const stats = useMemo(() => {
     const tier = GREECE_TIERS.find(t => t.id === tierId)!;
@@ -212,6 +224,8 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
       setCustomPrice(value);
     }
   };
+
+  const totalFlashClass = flashTotals ? "bg-emerald-50 dark:bg-emerald-900/20" : "";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
@@ -419,7 +433,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                 <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
                   {t.totalInvestment}
                 </CardTitle>
-                <div className="text-5xl font-bold text-primary pt-2">
+                <div className={`text-5xl font-bold text-primary pt-2 rounded-md px-2 transition-colors ${totalFlashClass}`}>
                   €{formatNumber(stats.grandTotal)}
                 </div>
               </CardHeader>
@@ -503,7 +517,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                         <span className="text-muted-foreground">{t.govRegistration}</span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.property.governmentRegistration)}</span>
                       </div>
-                      <div className="border-t pt-2 flex justify-between font-bold text-primary">
+                      <div className={`border-t pt-2 flex justify-between font-bold text-primary rounded-md px-1 transition-colors ${totalFlashClass}`}>
                         <span>{t.totalProperty}</span>
                         <span>€{formatNumber(stats.breakdown.property.total)}</span>
                       </div>
@@ -536,7 +550,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                         <span className="text-muted-foreground">{t.translationCosts}</span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.permit.translationCosts)}</span>
                       </div>
-                      <div className="border-t pt-2 flex justify-between font-bold text-primary">
+                      <div className={`border-t pt-2 flex justify-between font-bold text-primary rounded-md px-1 transition-colors ${totalFlashClass}`}>
                         <span>{t.totalPermit}</span>
                         <span>€{formatNumber(stats.breakdown.permit.total)}</span>
                       </div>
@@ -555,7 +569,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                           <span className="font-medium">€{formatNumber(stats.breakdown.additional.powerOfAttorneyFee)}</span>
                         </div>
                       )}
-                      <div className="border-t pt-2 flex justify-between font-bold text-primary">
+                      <div className={`border-t pt-2 flex justify-between font-bold text-primary rounded-md px-1 transition-colors ${totalFlashClass}`}>
                         <span>{t.totalAdditional}</span>
                         <span>€{formatNumber(stats.breakdown.additional.total)}</span>
                       </div>
@@ -591,7 +605,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                   <span className="font-medium">{t.additionalServices}</span>
                   <span className="font-bold">€{formatNumber(stats.totalAdditionalCosts)}</span>
                 </div>
-                <div className="flex justify-between py-3 bg-primary/10 px-3 rounded-lg mt-2">
+                <div className={`flex justify-between py-3 bg-primary/10 px-3 rounded-lg mt-2 transition-colors ${totalFlashClass}`}>
                   <span className="font-bold text-lg">{t.grandTotal}</span>
                   <span className="font-bold text-lg text-primary">€{formatNumber(stats.grandTotal)}</span>
                 </div>
