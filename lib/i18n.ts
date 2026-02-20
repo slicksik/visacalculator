@@ -6,7 +6,7 @@ export const defaultLocale: Locale = "en";
 export const slugs: Record<Locale, string> = {
   en: "greece-golden-visa-calculator",
   tr: "yunanistan-altin-vize-hesaplayici",
-  el: "elliniko-chryso-visa-ypologistis",
+  el: "upologistis-chrysis-vizas-elladas",
 };
 
 export const titles: Record<Locale, string> = {
@@ -278,21 +278,21 @@ export const ui = {
     additionalServices: "Πρόσθετες Υπηρεσίες",
     grandTotal: "ΓΕΝΙΚΟ ΣΥΝΟΛΟ",
     keyInfo: "Κύριες Πληροφορίες & Οφέλη",
-    visaBenefits: "Οφέλη Βίζας",
+    visaBenefits: "ΟΦΕΛΗ GOLDEN VISA",
     benefits: [
       "5ετής ανανεώσιμη άδεια διαμονής",
       "Ελεύθερη μετακίνηση στη Ζώνη Σένγκεν",
       "Χωρίς ελάχιστη παραμονή",
       "Οικογενειακή ένταξη (σύζυγος, παιδιά κάτω των 21)",
     ],
-    propertyReqs: "Απαιτήσεις Ακινήτου",
+    propertyReqs: "ΑΠΑΙΤΗΣΕΙΣ ΑΚΙΝΗΤΟΥ",
     propertyReqList: [
       "Ενιαίο ακίνητο ≥ 120 τ.μ.",
       "Πρέπει να διατηρείται καθ’ όλη τη διάρκεια",
       "Απαγορεύονται βραχυχρόνιες μισθώσεις",
       "Δυνατή η πώληση μετά την έγκριση",
     ],
-    processingTimeline: "Διαδικασία & Χρόνος",
+    processingTimeline: "ΔΙΑΔΙΚΑΣΙΑ & ΧΡΟΝΟΔΙΑΓΡΑΜΜΑ",
     processingList: [
       "Χρόνος επεξεργασίας: 6-8 μήνες",
       "Διαθέσιμη ταχεία επιλογή (+€3.000)",
