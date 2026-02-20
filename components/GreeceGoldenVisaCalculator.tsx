@@ -65,7 +65,6 @@ const FEE_RATES = {
   POWER_OF_ATTORNEY_MAX: 200,
 
   // Optional
-  EXPRESS_PROCESSING: 3000,               // Optional faster processing
 };
 
 const COLORS = [
@@ -93,7 +92,6 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
   const [children15Plus, setChildren15Plus] = useState(0);
   const [childrenUnder15, setChildrenUnder15] = useState(0);
   const [customPrice, setCustomPrice] = useState<string>('');
-  const [expressProcessing, setExpressProcessing] = useState(false);
   const [powerOfAttorney, setPowerOfAttorney] = useState(false);
   const [useMaxHealthInsurance, setUseMaxHealthInsurance] = useState(false);
 
@@ -141,10 +139,8 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
     const healthInsurance = healthInsuranceRate * totalFamilyMembers;
 
     const translationCosts = FEE_RATES.TRANSLATION_COSTS;
-    const expressProcessingFee = expressProcessing ? FEE_RATES.EXPRESS_PROCESSING : 0;
-
     const totalPermitCosts = permitApplicationPrep + permitCardMain + permitCardDependents +
-      healthInsurance + translationCosts + expressProcessingFee;
+      healthInsurance + translationCosts;
 
     // === ADDITIONAL COSTS ===
     const bankAccountTaxNumber = FEE_RATES.BANK_ACCOUNT_TAX_NUMBER;
@@ -167,7 +163,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
       { name: t.transferTax, value: transferTax },
       { name: t.professionalFees, value: realEstateConsultancyTotal + notaryFeeTotal + lawyerFeeTotal },
       { name: t.govRegistration, value: governmentRegistration },
-      { name: t.permitAndCards, value: permitApplicationPrep + permitCardMain + permitCardDependents + expressProcessingFee },
+      { name: t.permitAndCards, value: permitApplicationPrep + permitCardMain + permitCardDependents },
       { name: t.healthAndTranslation, value: healthInsurance + translationCosts },
       { name: t.totalAdditional, value: totalAdditionalCosts },
     ].filter(item => item.value > 0);
@@ -188,7 +184,6 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
         permitCardDependents,
         healthInsurance,
         translationCosts,
-        expressProcessingFee,
         total: totalPermitCosts,
       },
       additional: {
@@ -210,7 +205,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
       breakdown,
       totalFamilyMembers,
     };
-  }, [tierId, adults, children15Plus, childrenUnder15, customPrice, expressProcessing, powerOfAttorney, useMaxHealthInsurance, tierText]);
+  }, [tierId, adults, children15Plus, childrenUnder15, customPrice, powerOfAttorney, useMaxHealthInsurance, tierText]);
 
   const handlePriceChange = (value: string) => {
     if (value === '' || !isNaN(Number(value))) {
@@ -373,23 +368,6 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                 <CardDescription>{t.optionalDesc}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors">
-                  <Checkbox
-                    id="express"
-                    checked={expressProcessing}
-                    onChange={(e) => setExpressProcessing(e.target.checked)}
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <Label htmlFor="express" className="cursor-pointer font-medium">
-                      {t.expressTitle}
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t.expressDesc}
-                    </p>
-                  </div>
-                </div>
-
                 <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors">
                   <Checkbox
                     id="poa"
@@ -558,12 +536,6 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                         <span className="text-muted-foreground">{t.translationCosts}</span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.permit.translationCosts)}</span>
                       </div>
-                      {stats.breakdown.permit.expressProcessingFee > 0 && (
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">{t.expressProcessing}</span>
-                          <span className="font-medium">€{formatNumber(stats.breakdown.permit.expressProcessingFee)}</span>
-                        </div>
-                      )}
                       <div className="border-t pt-2 flex justify-between font-bold text-primary">
                         <span>{t.totalPermit}</span>
                         <span>€{formatNumber(stats.breakdown.permit.total)}</span>
