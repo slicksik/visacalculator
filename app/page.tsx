@@ -1,5 +1,6 @@
-import GreeceGoldenVisaCalculator from "@/components/GreeceGoldenVisaCalculator";
+import { redirect } from "next/navigation";
+import { slugs } from "@/lib/i18n";
 
 export default function Home() {
-  return <GreeceGoldenVisaCalculator />;
+  redirect(`/en/${slugs.en}`);
 }

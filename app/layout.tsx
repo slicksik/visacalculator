@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { defaultLocale, isLocale } from "@/lib/i18n";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,8 +16,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const localeCookie = cookies().get("NEXT_LOCALE")?.value;
+  const locale = isLocale(localeCookie) ? localeCookie : defaultLocale;
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body className={inter.className}>{children}</body>
     </html>
   );
