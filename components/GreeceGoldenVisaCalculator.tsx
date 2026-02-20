@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as ChartTooltip } from 'recharts';
-import { Info, TrendingUp, Users, Home, AlertCircle, FileText, Banknote } from 'lucide-react';
+import { Info, TrendingUp, Users, Home, AlertCircle, FileText, Banknote, HelpCircle, RotateCcw, FileDown } from 'lucide-react';
 
 const GREECE_TIERS = [
 
@@ -225,7 +225,27 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
     }
   };
 
+  const handleReset = () => {
+    setTierId(GREECE_TIERS[0].id);
+    setAdults(1);
+    setChildren15Plus(0);
+    setChildrenUnder15(0);
+    setCustomPrice('');
+    setPowerOfAttorney(false);
+    setUseMaxHealthInsurance(false);
+  };
+
   const totalFlashClass = flashTotals ? "bg-emerald-50 dark:bg-emerald-900/20" : "";
+
+  const InfoTip = ({ text }: { text: string }) => (
+    <span
+      className="inline-flex items-center text-muted-foreground"
+      title={text}
+      aria-label={text}
+    >
+      <HelpCircle className="w-3.5 h-3.5 ml-1" />
+    </span>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
@@ -262,12 +282,53 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {t.subtitle}
           </p>
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              <FileDown className="w-4 h-4" />
+              {t.ctaPdf}
+            </button>
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-border text-sm font-medium hover:bg-accent transition-colors"
+            >
+              {t.ctaContact}
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-sm">
+          {[
+            { step: "1", label: t.stepChooseZone },
+            { step: "2", label: t.stepFamily },
+            { step: "3", label: t.stepOptions },
+            { step: "4", label: t.stepSummary },
+          ].map((item) => (
+            <div key={item.step} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card">
+              <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-semibold">
+                {item.step}
+              </div>
+              <div className="font-medium">{item.label}</div>
+            </div>
+          ))}
         </div>
 
         {/* Main Calculator Grid */}
         <div className="grid lg:grid-cols-12 gap-6 items-start">
           {/* Left Column: Inputs */}
           <div className="lg:col-span-7 space-y-6">
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleReset}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-border text-sm font-medium hover:bg-accent transition-colors"
+              >
+                <RotateCcw className="w-4 h-4" />
+                {t.resetInputs}
+              </button>
+            </div>
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -316,7 +377,9 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                     className="h-12 text-lg"
                   />
                   <p className="text-xs text-muted-foreground">
-                    {t.propertyHintPrefix} €{formatNumber(stats.tier.minInvestment)}
+                    {customPrice === ""
+                      ? `${t.usingMinimum} €${formatNumber(stats.tier.minInvestment)}`
+                      : `${t.propertyHintPrefix} €${formatNumber(stats.tier.minInvestment)}`}
                   </p>
                 </div>
               </CardContent>
@@ -331,39 +394,51 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                 <CardDescription>{t.familyDesc}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label>{t.adultsLabel}</Label>
-                    <Input
-                      type="number"
-                      min={1}
-                      value={adults}
-                      onChange={(e) => setAdults(Math.max(1, Number(e.target.value)))}
-                      className="h-11"
-                    />
-                    <p className="text-xs text-muted-foreground">{t.adultsHint}</p>
+                <div className="space-y-3">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {t.groupApplicants}
                   </div>
-                  <div className="space-y-2">
-                    <Label>{t.children15PlusLabel}</Label>
-                    <Input
-                      type="number"
-                      min={0}
-                      value={children15Plus}
-                      onChange={(e) => setChildren15Plus(Math.max(0, Number(e.target.value)))}
-                      className="h-11"
-                    />
-                    <p className="text-xs text-muted-foreground">{t.children15PlusHint}</p>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>{t.adultsLabel}</Label>
+                      <Input
+                        type="number"
+                        min={1}
+                        value={adults}
+                        onChange={(e) => setAdults(Math.max(1, Number(e.target.value)))}
+                        className="h-11"
+                      />
+                      <p className="text-xs text-muted-foreground">{t.adultsHint}</p>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label>{t.childrenUnder15Label}</Label>
-                    <Input
-                      type="number"
-                      min={0}
-                      value={childrenUnder15}
-                      onChange={(e) => setChildrenUnder15(Math.max(0, Number(e.target.value)))}
-                      className="h-11"
-                    />
-                    <p className="text-xs text-muted-foreground">{t.childrenUnder15Hint}</p>
+                </div>
+                <div className="space-y-3">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {t.groupChildren}
+                  </div>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>{t.children15PlusLabel}</Label>
+                      <Input
+                        type="number"
+                        min={0}
+                        value={children15Plus}
+                        onChange={(e) => setChildren15Plus(Math.max(0, Number(e.target.value)))}
+                        className="h-11"
+                      />
+                      <p className="text-xs text-muted-foreground">{t.children15PlusHint}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t.childrenUnder15Label}</Label>
+                      <Input
+                        type="number"
+                        min={0}
+                        value={childrenUnder15}
+                        onChange={(e) => setChildrenUnder15(Math.max(0, Number(e.target.value)))}
+                        className="h-11"
+                      />
+                      <p className="text-xs text-muted-foreground">{t.childrenUnder15Hint}</p>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
@@ -427,7 +502,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
           </div>
 
           {/* Right Column: Results */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-6 self-start">
             <Card className="shadow-xl border-2 border-border">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
@@ -492,29 +567,44 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                   </TabsList>
 
                   <TabsContent value="property" className="space-y-3 pt-4">
-                    <div className="space-y-2.5">
+                    <div className="space-y-2.5 divide-y divide-border/60">
                       <div className="flex justify-between text-sm font-semibold bg-muted p-2 rounded">
                         <span>{t.propertyPurchase}</span>
                         <span>€{formatNumber(stats.breakdown.property.purchasePrice)}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">{t.transferTax}</span>
+                      <div className="flex justify-between text-sm pt-2.5">
+                        <span className="text-muted-foreground inline-flex items-center">
+                          {t.transferTax}
+                          <InfoTip text={t.tooltipTransferTax} />
+                        </span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.property.transferTax)}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">{t.consultancy}</span>
+                      <div className="flex justify-between text-sm pt-2.5">
+                        <span className="text-muted-foreground inline-flex items-center">
+                          {t.consultancy}
+                          <InfoTip text={t.tooltipConsultancy} />
+                        </span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.property.realEstateConsultancy.total)}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">{t.notaryFee}</span>
+                      <div className="flex justify-between text-sm pt-2.5">
+                        <span className="text-muted-foreground inline-flex items-center">
+                          {t.notaryFee}
+                          <InfoTip text={t.tooltipNotary} />
+                        </span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.property.notaryFee.total)}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">{t.lawyerFee}</span>
+                      <div className="flex justify-between text-sm pt-2.5">
+                        <span className="text-muted-foreground inline-flex items-center">
+                          {t.lawyerFee}
+                          <InfoTip text={t.tooltipLawyer} />
+                        </span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.property.lawyerFee.total)}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">{t.govRegistration}</span>
+                      <div className="flex justify-between text-sm pt-2.5">
+                        <span className="text-muted-foreground inline-flex items-center">
+                          {t.govRegistration}
+                          <InfoTip text={t.tooltipGovReg} />
+                        </span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.property.governmentRegistration)}</span>
                       </div>
                       <div className={`border-t pt-2 flex justify-between font-bold text-primary rounded-md px-1 transition-colors ${totalFlashClass}`}>
@@ -525,29 +615,35 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                   </TabsContent>
 
                   <TabsContent value="permit" className="space-y-3 pt-4">
-                    <div className="space-y-2.5">
-                      <div className="flex justify-between text-sm">
+                    <div className="space-y-2.5 divide-y divide-border/60">
+                      <div className="flex justify-between text-sm pt-2.5">
                         <span className="text-muted-foreground">{t.applicationPrep}</span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.permit.permitApplicationPrep)}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-sm pt-2.5">
                         <span className="text-muted-foreground">{t.mainCard}</span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.permit.permitCardMain)}</span>
                       </div>
                       {stats.breakdown.permit.permitCardDependents > 0 && (
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm pt-2.5">
                           <span className="text-muted-foreground">
                             {t.childrenCards} ({children15Plus + childrenUnder15})
                           </span>
                           <span className="font-medium">€{formatNumber(stats.breakdown.permit.permitCardDependents)}</span>
                         </div>
                       )}
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">{t.healthInsurance} ({stats.totalFamilyMembers})</span>
+                      <div className="flex justify-between text-sm pt-2.5">
+                        <span className="text-muted-foreground inline-flex items-center">
+                          {t.healthInsurance} ({stats.totalFamilyMembers})
+                          <InfoTip text={t.tooltipHealth} />
+                        </span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.permit.healthInsurance)}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">{t.translationCosts}</span>
+                      <div className="flex justify-between text-sm pt-2.5">
+                        <span className="text-muted-foreground inline-flex items-center">
+                          {t.translationCosts}
+                          <InfoTip text={t.tooltipTranslation} />
+                        </span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.permit.translationCosts)}</span>
                       </div>
                       <div className={`border-t pt-2 flex justify-between font-bold text-primary rounded-md px-1 transition-colors ${totalFlashClass}`}>
@@ -558,14 +654,20 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                   </TabsContent>
 
                   <TabsContent value="additional" className="space-y-3 pt-4">
-                    <div className="space-y-2.5">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">{t.bankAccount}</span>
+                    <div className="space-y-2.5 divide-y divide-border/60">
+                      <div className="flex justify-between text-sm pt-2.5">
+                        <span className="text-muted-foreground inline-flex items-center">
+                          {t.bankAccount}
+                          <InfoTip text={t.tooltipBankAccount} />
+                        </span>
                         <span className="font-medium">€{formatNumber(stats.breakdown.additional.bankAccountTaxNumber)}</span>
                       </div>
                       {stats.breakdown.additional.powerOfAttorneyFee > 0 && (
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">{t.powerOfAttorney}</span>
+                        <div className="flex justify-between text-sm pt-2.5">
+                          <span className="text-muted-foreground inline-flex items-center">
+                            {t.powerOfAttorney}
+                            <InfoTip text={t.tooltipPowerOfAttorney} />
+                          </span>
                           <span className="font-medium">€{formatNumber(stats.breakdown.additional.powerOfAttorneyFee)}</span>
                         </div>
                       )}
