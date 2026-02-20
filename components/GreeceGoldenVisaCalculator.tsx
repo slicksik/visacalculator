@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useMemo } from 'react';
 import Link from "next/link";
-import { Locale, localeToIntl, slugs, ui } from "@/lib/i18n";
+import { Locale, localeToIntl, slugs, tiers, ui } from "@/lib/i18n";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -84,6 +84,7 @@ type Props = {
 
 export default function GreeceGoldenVisaCalculator({ locale }: Props) {
   const t = ui[locale];
+  const tierText = tiers[locale];
   const numberLocale = localeToIntl[locale];
   const formatNumber = (value: number) => value.toLocaleString(numberLocale);
 
@@ -98,6 +99,8 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
 
   const stats = useMemo(() => {
     const tier = GREECE_TIERS.find(t => t.id === tierId)!;
+    const tierIndex = GREECE_TIERS.findIndex(t => t.id === tierId);
+    const text = tierText[tierIndex] ?? tierText[0];
     const purchasePrice = customPrice && Number(customPrice) > 0
       ? Math.max(Number(customPrice), tier.minInvestment)
       : tier.minInvestment;
@@ -197,6 +200,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
 
     return {
       tier,
+      tierText: text,
       purchasePrice,
       totalPropertyCosts,
       totalPermitCosts,
@@ -206,7 +210,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
       breakdown,
       totalFamilyMembers,
     };
-  }, [tierId, adults, children15Plus, childrenUnder15, customPrice, expressProcessing, powerOfAttorney, useMaxHealthInsurance]);
+  }, [tierId, adults, children15Plus, childrenUnder15, customPrice, expressProcessing, powerOfAttorney, useMaxHealthInsurance, tierText]);
 
   const handlePriceChange = (value: string) => {
     if (value === '' || !isNaN(Number(value))) {
@@ -269,18 +273,18 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                   <Select value={tierId} onValueChange={setTierId}>
                     <SelectTrigger className="h-auto py-3">
                       <div className="text-left">
-                        <div className="font-semibold">{stats.tier.label}</div>
-                        <div className="text-xs text-muted-foreground">{stats.tier.subtitle}</div>
+                        <div className="font-semibold">{stats.tierText.label}</div>
+                        <div className="text-xs text-muted-foreground">{stats.tierText.subtitle}</div>
                       </div>
                     </SelectTrigger>
                     <SelectContent>
-                      {GREECE_TIERS.map(t => (
-                        <SelectItem key={t.id} value={t.id} className="py-3">
+                      {GREECE_TIERS.map((tier, index) => (
+                        <SelectItem key={tier.id} value={tier.id} className="py-3">
                           <div className="space-y-1">
-                            <div className="font-semibold">{t.label}</div>
-                            <div className="text-xs text-muted-foreground">{t.subtitle}</div>
+                            <div className="font-semibold">{tierText[index]?.label ?? tier.label}</div>
+                            <div className="text-xs text-muted-foreground">{tierText[index]?.subtitle ?? tier.subtitle}</div>
                             <div className="text-sm font-medium text-primary">
-                              {`${ui[locale].minLabel}: €${formatNumber(t.minInvestment)}`}
+                              {`${ui[locale].minLabel}: €${formatNumber(tier.minInvestment)}`}
                             </div>
                           </div>
                         </SelectItem>
@@ -289,7 +293,7 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
                   </Select>
                   <div className="flex items-start gap-2 p-3 bg-muted rounded-lg border border-border">
                     <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-foreground">{stats.tier.description}</p>
+                    <p className="text-sm text-foreground">{stats.tierText.description}</p>
                   </div>
                 </div>
 

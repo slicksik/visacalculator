@@ -304,3 +304,57 @@ export const ui = {
     language: "Γλώσσα",
   },
 } as const;
+
+export const tiers = {
+  en: [
+    {
+      label: "Conversion/Restoration",
+      subtitle: "Nationwide",
+      description: "Commercial-to-residential conversion or listed building restoration.",
+    },
+    {
+      label: "Standard Zone",
+      subtitle: "Rest of Greece",
+      description: "Regional mainland and small islands. Single property ≥ 120sqm.",
+    },
+    {
+      label: "Prime Zone",
+      subtitle: "Athens, Thessaloniki, Mykonos, Santorini",
+      description: "Includes islands > 3,100 residents. Single property ≥ 120sqm.",
+    },
+  ],
+  tr: [
+    {
+      label: "Dönüşüm/Restorasyon",
+      subtitle: "Ülke Genelinde",
+      description: "Ticari alanın konuta dönüşümü veya tescilli binanın restorasyonu.",
+    },
+    {
+      label: "Standart Bölge",
+      subtitle: "Yunanistan'ın Diğer Bölgeleri",
+      description: "Bölgesel ana kara ve küçük adalar. Tek mülk ≥ 120 m².",
+    },
+    {
+      label: "Birinci Bölge",
+      subtitle: "Atina, Selanik, Mikonos, Santorini",
+      description: "3.100+ nüfuslu adaları kapsar. Tek mülk ≥ 120 m².",
+    },
+  ],
+  el: [
+    {
+      label: "Μετατροπή/Αποκατάσταση",
+      subtitle: "Πανελλαδικά",
+      description: "Μετατροπή εμπορικού σε κατοικία ή αποκατάσταση διατηρητέου.",
+    },
+    {
+      label: "Τυπική Ζώνη",
+      subtitle: "Υπόλοιπη Ελλάδα",
+      description: "Περιφερειακή ενδοχώρα και μικρά νησιά. Ενιαίο ακίνητο ≥ 120 τ.μ.",
+    },
+    {
+      label: "Προνομιακή Ζώνη",
+      subtitle: "Αθήνα, Θεσσαλονίκη, Μύκονος, Σαντορίνη",
+      description: "Περιλαμβάνει νησιά με πληθυσμό > 3.100. Ενιαίο ακίνητο ≥ 120 τ.μ.",
+    },
+  ],
+} as const;
