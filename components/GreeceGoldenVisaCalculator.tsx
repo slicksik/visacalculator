@@ -66,7 +66,15 @@ const FEE_RATES = {
   EXPRESS_PROCESSING: 3000,               // Optional faster processing
 };
 
-const COLORS = ['#1e40af', '#3b82f6', '#60a5fa', '#93c5fd', '#10b981', '#f59e0b', '#ef4444'];
+const COLORS = [
+  'hsl(var(--primary))',
+  'hsl(var(--secondary))',
+  'hsl(var(--accent))',
+  'hsl(var(--muted))',
+  'hsl(var(--ring))',
+  'hsl(var(--destructive))',
+  'hsl(var(--border))',
+];
 
 export default function GreeceGoldenVisaCalculator() {
   const [tierId, setTierId] = useState(GREECE_TIERS[0].id);
@@ -197,11 +205,11 @@ export default function GreeceGoldenVisaCalculator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-slate-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto p-4 lg:p-8 space-y-8">
         {/* Header */}
         <div className="text-center space-y-3 py-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-secondary text-secondary-foreground rounded-full text-sm font-medium">
             <TrendingUp className="w-4 h-4" />
             Law 5100/2024 Compliant
           </div>
@@ -241,7 +249,7 @@ export default function GreeceGoldenVisaCalculator() {
                           <div className="space-y-1">
                             <div className="font-semibold">{t.label}</div>
                             <div className="text-xs text-muted-foreground">{t.subtitle}</div>
-                            <div className="text-sm font-medium text-blue-600">
+                            <div className="text-sm font-medium text-primary">
                               Min: €{t.minInvestment.toLocaleString()}
                             </div>
                           </div>
@@ -249,9 +257,9 @@ export default function GreeceGoldenVisaCalculator() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-blue-900">{stats.tier.description}</p>
+                  <div className="flex items-start gap-2 p-3 bg-muted rounded-lg border border-border">
+                    <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-foreground">{stats.tier.description}</p>
                   </div>
                 </div>
 
@@ -315,7 +323,7 @@ export default function GreeceGoldenVisaCalculator() {
                     <p className="text-xs text-muted-foreground">€16 per child</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 p-3 bg-slate-100 rounded-lg">
+                <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
                   <span className="text-sm font-medium">Total family members:</span>
                   <Badge variant="secondary" className="text-base">{stats.totalFamilyMembers}</Badge>
                 </div>
@@ -331,7 +339,7 @@ export default function GreeceGoldenVisaCalculator() {
                 <CardDescription>Select additional services if needed</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-slate-50 transition-colors">
+                <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors">
                   <Checkbox
                     id="express"
                     checked={expressProcessing}
@@ -348,7 +356,7 @@ export default function GreeceGoldenVisaCalculator() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-slate-50 transition-colors">
+                <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors">
                   <Checkbox
                     id="poa"
                     checked={powerOfAttorney}
@@ -365,7 +373,7 @@ export default function GreeceGoldenVisaCalculator() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-slate-50 transition-colors">
+                <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors">
                   <Checkbox
                     id="health"
                     checked={useMaxHealthInsurance}
@@ -384,9 +392,9 @@ export default function GreeceGoldenVisaCalculator() {
               </CardContent>
             </Card>
 
-            <Alert className="border-amber-200 bg-amber-50">
-              <AlertCircle className="h-4 w-4 text-amber-600" />
-              <AlertDescription className="text-amber-900">
+            <Alert className="border-border bg-muted">
+              <AlertCircle className="h-4 w-4 text-foreground" />
+              <AlertDescription className="text-foreground">
                 <strong>Important:</strong> Short-term rentals (Airbnb, booking platforms) are prohibited for Golden Visa properties under Law 5100/2024.
               </AlertDescription>
             </Alert>
@@ -394,7 +402,7 @@ export default function GreeceGoldenVisaCalculator() {
 
           {/* Right Column: Results */}
           <div className="lg:col-span-5 space-y-6">
-            <Card className="shadow-xl border-2 border-primary/20">
+            <Card className="shadow-xl border-2 border-border">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
                   Total Investment Required
@@ -428,12 +436,12 @@ export default function GreeceGoldenVisaCalculator() {
 
                 <div className="space-y-2">
                   {stats.chartData.map((item, i) => (
-                    <div key={item.name} className="flex justify-between items-center p-2 rounded hover:bg-slate-50 transition-colors">
+                    <div key={item.name} className="flex justify-between items-center p-2 rounded hover:bg-accent transition-colors">
                       <div className="flex items-center gap-2.5">
                         <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i] }} />
                         <span className="text-sm font-medium">{item.name}</span>
                       </div>
-                      <span className="font-bold text-slate-900">€{item.value.toLocaleString()}</span>
+                      <span className="font-bold text-foreground">€{item.value.toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
@@ -454,7 +462,7 @@ export default function GreeceGoldenVisaCalculator() {
 
                   <TabsContent value="property" className="space-y-3 pt-4">
                     <div className="space-y-2.5">
-                      <div className="flex justify-between text-sm font-semibold bg-slate-100 p-2 rounded">
+                      <div className="flex justify-between text-sm font-semibold bg-muted p-2 rounded">
                         <span>Property Purchase</span>
                         <span>€{stats.breakdown.property.purchasePrice.toLocaleString()}</span>
                       </div>
@@ -478,7 +486,7 @@ export default function GreeceGoldenVisaCalculator() {
                         <span className="text-muted-foreground">Gov Registration (0.8%)</span>
                         <span className="font-medium">€{stats.breakdown.property.governmentRegistration.toLocaleString()}</span>
                       </div>
-                      <div className="border-t pt-2 flex justify-between font-bold text-blue-600">
+                      <div className="border-t pt-2 flex justify-between font-bold text-primary">
                         <span>Total Property Costs</span>
                         <span>€{stats.breakdown.property.total.toLocaleString()}</span>
                       </div>
@@ -517,7 +525,7 @@ export default function GreeceGoldenVisaCalculator() {
                           <span className="font-medium">€{stats.breakdown.permit.expressProcessingFee.toLocaleString()}</span>
                         </div>
                       )}
-                      <div className="border-t pt-2 flex justify-between font-bold text-blue-600">
+                      <div className="border-t pt-2 flex justify-between font-bold text-primary">
                         <span>Total Permit Costs</span>
                         <span>€{stats.breakdown.permit.total.toLocaleString()}</span>
                       </div>
@@ -536,11 +544,11 @@ export default function GreeceGoldenVisaCalculator() {
                           <span className="font-medium">€{stats.breakdown.additional.powerOfAttorneyFee.toLocaleString()}</span>
                         </div>
                       )}
-                      <div className="border-t pt-2 flex justify-between font-bold text-blue-600">
+                      <div className="border-t pt-2 flex justify-between font-bold text-primary">
                         <span>Total Additional Costs</span>
                         <span>€{stats.breakdown.additional.total.toLocaleString()}</span>
                       </div>
-                      <div className="mt-3 p-3 bg-blue-50 rounded-lg text-sm text-blue-900">
+                      <div className="mt-3 p-3 bg-muted rounded-lg text-sm text-foreground">
                         <p className="font-medium mb-1">Not Included:</p>
                         <ul className="text-xs space-y-1">
                           <li>• Legal check fee (€150) - only if property not suitable</li>
@@ -552,7 +560,7 @@ export default function GreeceGoldenVisaCalculator() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-lg bg-gradient-to-br from-blue-50 to-slate-50">
+            <Card className="shadow-lg bg-card">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Banknote className="w-5 h-5" />
@@ -582,14 +590,14 @@ export default function GreeceGoldenVisaCalculator() {
         </div>
 
         {/* Footer Information */}
-        <Card className="shadow-lg bg-gradient-to-r from-slate-50 to-blue-50">
+        <Card className="shadow-lg bg-card">
           <CardHeader>
             <CardTitle>Key Information & Benefits</CardTitle>
           </CardHeader>
           <CardContent className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
               <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Visa Benefits</h4>
-              <ul className="text-sm space-y-1.5 list-disc list-inside text-slate-700">
+              <ul className="text-sm space-y-1.5 list-disc list-inside text-muted-foreground">
                 <li>5-year renewable residency permit</li>
                 <li>Visa-free Schengen travel</li>
                 <li>No minimum stay requirement</li>
@@ -598,7 +606,7 @@ export default function GreeceGoldenVisaCalculator() {
             </div>
             <div className="space-y-2">
               <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Property Requirements</h4>
-              <ul className="text-sm space-y-1.5 list-disc list-inside text-slate-700">
+              <ul className="text-sm space-y-1.5 list-disc list-inside text-muted-foreground">
                 <li>Single property ≥ 120sqm required</li>
                 <li>Must be held for duration of permit</li>
                 <li>No short-term rental allowed</li>
@@ -607,7 +615,7 @@ export default function GreeceGoldenVisaCalculator() {
             </div>
             <div className="space-y-2">
               <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Processing & Timeline</h4>
-              <ul className="text-sm space-y-1.5 list-disc list-inside text-slate-700">
+              <ul className="text-sm space-y-1.5 list-disc list-inside text-muted-foreground">
                 <li>Processing: 6-8 months typically</li>
                 <li>Express option available (+€3,000)</li>
                 <li>No work rights (investments allowed)</li>
