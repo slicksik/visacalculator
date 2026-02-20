@@ -51,5 +51,5 @@ export default function LocalizedCalculatorPage({ params }: PageParams) {
   const locale = params.locale as Locale;
   if (params.slug !== slugs[locale]) notFound();
 
-  return <GreeceGoldenVisaCalculator />;
+  return <GreeceGoldenVisaCalculator locale={locale} />;
 }

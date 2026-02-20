@@ -1,5 +1,7 @@
 "use client"
 import React, { useState, useMemo } from 'react';
+import Link from "next/link";
+import { Locale, localeToIntl, slugs, ui } from "@/lib/i18n";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -76,7 +78,15 @@ const COLORS = [
   'hsl(var(--border))',
 ];
 
-export default function GreeceGoldenVisaCalculator() {
+type Props = {
+  locale: Locale;
+};
+
+export default function GreeceGoldenVisaCalculator({ locale }: Props) {
+  const t = ui[locale];
+  const numberLocale = localeToIntl[locale];
+  const formatNumber = (value: number) => value.toLocaleString(numberLocale);
+
   const [tierId, setTierId] = useState(GREECE_TIERS[0].id);
   const [adults, setAdults] = useState(1);
   const [children15Plus, setChildren15Plus] = useState(0);
@@ -150,13 +160,13 @@ export default function GreeceGoldenVisaCalculator() {
 
     // Chart data
     const chartData = [
-      { name: 'Property Purchase', value: purchasePrice },
-      { name: 'Transfer Tax (3.09%)', value: transferTax },
-      { name: 'Professional Fees', value: realEstateConsultancyTotal + notaryFeeTotal + lawyerFeeTotal },
-      { name: 'Gov Registration (0.8%)', value: governmentRegistration },
-      { name: 'Permit & Cards', value: permitApplicationPrep + permitCardMain + permitCardDependents + expressProcessingFee },
-      { name: 'Health & Translation', value: healthInsurance + translationCosts },
-      { name: 'Additional Costs', value: totalAdditionalCosts },
+      { name: t.propertyPurchase, value: purchasePrice },
+      { name: t.transferTax, value: transferTax },
+      { name: t.professionalFees, value: realEstateConsultancyTotal + notaryFeeTotal + lawyerFeeTotal },
+      { name: t.govRegistration, value: governmentRegistration },
+      { name: t.permitAndCards, value: permitApplicationPrep + permitCardMain + permitCardDependents + expressProcessingFee },
+      { name: t.healthAndTranslation, value: healthInsurance + translationCosts },
+      { name: t.totalAdditional, value: totalAdditionalCosts },
     ].filter(item => item.value > 0);
 
     const breakdown = {
@@ -209,15 +219,35 @@ export default function GreeceGoldenVisaCalculator() {
       <div className="max-w-7xl mx-auto p-4 lg:p-8 space-y-8">
         {/* Header */}
         <div className="text-center space-y-3 py-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-secondary text-secondary-foreground rounded-full text-sm font-medium">
-            <TrendingUp className="w-4 h-4" />
-            Law 5100/2024 Compliant
+          <div className="flex items-center justify-between gap-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-secondary text-secondary-foreground rounded-full text-sm font-medium">
+              <TrendingUp className="w-4 h-4" />
+              {t.badgeLaw}
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-muted-foreground">{t.language}</span>
+              <div className="flex items-center gap-2">
+                {(["en", "tr", "el"] as Locale[]).map((lang) => (
+                  <Link
+                    key={lang}
+                    href={`/${lang}/${slugs[lang]}`}
+                    className={`px-2 py-1 rounded border text-xs font-medium transition-colors ${
+                      lang === locale
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "hover:bg-accent border-border text-foreground"
+                    }`}
+                  >
+                    {lang.toUpperCase()}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
           <h1 className="text-4xl lg:text-5xl font-bold tracking-tight">
-            Greece Golden Visa Calculator
+            {t.title}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Complete cost breakdown for Greek residency by investment. All fees included.
+            {t.subtitle}
           </p>
         </div>
 
@@ -229,13 +259,13 @@ export default function GreeceGoldenVisaCalculator() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Home className="w-5 h-5" />
-                  Investment Details
+                  {t.investmentDetails}
                 </CardTitle>
-                <CardDescription>Select your investment zone and property price</CardDescription>
+                <CardDescription>{t.investmentDesc}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-3">
-                  <Label className="text-base font-semibold">Investment Zone</Label>
+                  <Label className="text-base font-semibold">{t.investmentZone}</Label>
                   <Select value={tierId} onValueChange={setTierId}>
                     <SelectTrigger className="h-auto py-3">
                       <div className="text-left">
@@ -250,7 +280,7 @@ export default function GreeceGoldenVisaCalculator() {
                             <div className="font-semibold">{t.label}</div>
                             <div className="text-xs text-muted-foreground">{t.subtitle}</div>
                             <div className="text-sm font-medium text-primary">
-                              Min: €{t.minInvestment.toLocaleString()}
+                              {`${ui[locale].minLabel}: €${formatNumber(t.minInvestment)}`}
                             </div>
                           </div>
                         </SelectItem>
@@ -264,16 +294,16 @@ export default function GreeceGoldenVisaCalculator() {
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-base font-semibold">Property Purchase Price (€)</Label>
+                  <Label className="text-base font-semibold">{t.propertyPrice}</Label>
                   <Input
                     type="text"
-                    placeholder={`Min: €${stats.tier.minInvestment.toLocaleString()}`}
+                    placeholder={`${t.minLabel}: €${formatNumber(stats.tier.minInvestment)}`}
                     value={customPrice}
                     onChange={(e) => handlePriceChange(e.target.value)}
                     className="h-12 text-lg"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Enter the actual property price. Must meet minimum: €{stats.tier.minInvestment.toLocaleString()}
+                    {t.propertyHintPrefix} €{formatNumber(stats.tier.minInvestment)}
                   </p>
                 </div>
               </CardContent>
@@ -283,14 +313,14 @@ export default function GreeceGoldenVisaCalculator() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="w-5 h-5" />
-                  Family Members
+                  {t.familyTitle}
                 </CardTitle>
-                <CardDescription>Applicants by age group</CardDescription>
+                <CardDescription>{t.familyDesc}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid sm:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label>Adult Applicants (18+)</Label>
+                    <Label>{t.adultsLabel}</Label>
                     <Input
                       type="number"
                       min={1}
@@ -298,10 +328,10 @@ export default function GreeceGoldenVisaCalculator() {
                       onChange={(e) => setAdults(Math.max(1, Number(e.target.value)))}
                       className="h-11"
                     />
-                    <p className="text-xs text-muted-foreground">Includes main applicant</p>
+                    <p className="text-xs text-muted-foreground">{t.adultsHint}</p>
                   </div>
                   <div className="space-y-2">
-                    <Label>Children 15+ (15-17)</Label>
+                    <Label>{t.children15PlusLabel}</Label>
                     <Input
                       type="number"
                       min={0}
@@ -309,10 +339,10 @@ export default function GreeceGoldenVisaCalculator() {
                       onChange={(e) => setChildren15Plus(Math.max(0, Number(e.target.value)))}
                       className="h-11"
                     />
-                    <p className="text-xs text-muted-foreground">€150 per child</p>
+                    <p className="text-xs text-muted-foreground">{t.children15PlusHint}</p>
                   </div>
                   <div className="space-y-2">
-                    <Label>Children Under 15</Label>
+                    <Label>{t.childrenUnder15Label}</Label>
                     <Input
                       type="number"
                       min={0}
@@ -320,11 +350,11 @@ export default function GreeceGoldenVisaCalculator() {
                       onChange={(e) => setChildrenUnder15(Math.max(0, Number(e.target.value)))}
                       className="h-11"
                     />
-                    <p className="text-xs text-muted-foreground">€16 per child</p>
+                    <p className="text-xs text-muted-foreground">{t.childrenUnder15Hint}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                  <span className="text-sm font-medium">Total family members:</span>
+                  <span className="text-sm font-medium">{t.totalFamily}</span>
                   <Badge variant="secondary" className="text-base">{stats.totalFamilyMembers}</Badge>
                 </div>
               </CardContent>
@@ -334,9 +364,9 @@ export default function GreeceGoldenVisaCalculator() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="w-5 h-5" />
-                  Optional Services
+                  {t.optionalTitle}
                 </CardTitle>
-                <CardDescription>Select additional services if needed</CardDescription>
+                <CardDescription>{t.optionalDesc}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors">
@@ -348,10 +378,10 @@ export default function GreeceGoldenVisaCalculator() {
                   />
                   <div className="flex-1">
                     <Label htmlFor="express" className="cursor-pointer font-medium">
-                      Express Processing
+                      {t.expressTitle}
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Faster residence permit processing for all family members (+€3,000)
+                      {t.expressDesc}
                     </p>
                   </div>
                 </div>
@@ -365,10 +395,10 @@ export default function GreeceGoldenVisaCalculator() {
                   />
                   <div className="flex-1">
                     <Label htmlFor="poa" className="cursor-pointer font-medium">
-                      Power of Attorney
+                      {t.poaTitle}
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Grant someone power to act on your behalf (€150-200 + 24% VAT)
+                      {t.poaDesc}
                     </p>
                   </div>
                 </div>
@@ -382,10 +412,10 @@ export default function GreeceGoldenVisaCalculator() {
                   />
                   <div className="flex-1">
                     <Label htmlFor="health" className="cursor-pointer font-medium">
-                      Premium Health Insurance
+                      {t.healthTitle}
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Use maximum rate (€110 vs €80 per person, age-dependent)
+                      {t.healthDesc}
                     </p>
                   </div>
                 </div>
@@ -395,7 +425,7 @@ export default function GreeceGoldenVisaCalculator() {
             <Alert className="border-border bg-muted">
               <AlertCircle className="h-4 w-4 text-foreground" />
               <AlertDescription className="text-foreground">
-                <strong>Important:</strong> Short-term rentals (Airbnb, booking platforms) are prohibited for Golden Visa properties under Law 5100/2024.
+                <strong>{t.alertTitle}</strong> {t.alertBody}
               </AlertDescription>
             </Alert>
           </div>
@@ -405,10 +435,10 @@ export default function GreeceGoldenVisaCalculator() {
             <Card className="shadow-xl border-2 border-border">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                  Total Investment Required
+                  {t.totalInvestment}
                 </CardTitle>
                 <div className="text-5xl font-bold text-primary pt-2">
-                  €{stats.grandTotal.toLocaleString()}
+                  €{formatNumber(stats.grandTotal)}
                 </div>
               </CardHeader>
               <CardContent>
@@ -427,8 +457,13 @@ export default function GreeceGoldenVisaCalculator() {
                         ))}
                       </Pie>
                       <ChartTooltip
-                        formatter={(value: number) => `€${value.toLocaleString()}`}
-                        contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                        formatter={(value: number) => `€${formatNumber(value)}`}
+                        contentStyle={{
+                          borderRadius: '8px',
+                          border: '1px solid hsl(var(--border))',
+                          backgroundColor: 'hsl(var(--background))',
+                          color: 'hsl(var(--foreground))',
+                        }}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -441,7 +476,7 @@ export default function GreeceGoldenVisaCalculator() {
                         <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i] }} />
                         <span className="text-sm font-medium">{item.name}</span>
                       </div>
-                      <span className="font-bold text-foreground">€{item.value.toLocaleString()}</span>
+                      <span className="font-bold text-foreground">€{formatNumber(item.value)}</span>
                     </div>
                   ))}
                 </div>
@@ -450,45 +485,45 @@ export default function GreeceGoldenVisaCalculator() {
 
             <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle className="text-lg">Detailed Cost Breakdown</CardTitle>
+                <CardTitle className="text-lg">{t.breakdownTitle}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="property" className="w-full">
                   <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="property">Property</TabsTrigger>
-                    <TabsTrigger value="permit">Permit</TabsTrigger>
-                    <TabsTrigger value="additional">Additional</TabsTrigger>
+                    <TabsTrigger value="property">{t.tabProperty}</TabsTrigger>
+                    <TabsTrigger value="permit">{t.tabPermit}</TabsTrigger>
+                    <TabsTrigger value="additional">{t.tabAdditional}</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="property" className="space-y-3 pt-4">
                     <div className="space-y-2.5">
                       <div className="flex justify-between text-sm font-semibold bg-muted p-2 rounded">
-                        <span>Property Purchase</span>
-                        <span>€{stats.breakdown.property.purchasePrice.toLocaleString()}</span>
+                        <span>{t.propertyPurchase}</span>
+                        <span>€{formatNumber(stats.breakdown.property.purchasePrice)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Transfer Tax (3.09%)</span>
-                        <span className="font-medium">€{stats.breakdown.property.transferTax.toLocaleString()}</span>
+                        <span className="text-muted-foreground">{t.transferTax}</span>
+                        <span className="font-medium">€{formatNumber(stats.breakdown.property.transferTax)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Real Estate Consultancy (2% + VAT)</span>
-                        <span className="font-medium">€{stats.breakdown.property.realEstateConsultancy.total.toLocaleString()}</span>
+                        <span className="text-muted-foreground">{t.consultancy}</span>
+                        <span className="font-medium">€{formatNumber(stats.breakdown.property.realEstateConsultancy.total)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Notary Fee (1% + VAT)</span>
-                        <span className="font-medium">€{stats.breakdown.property.notaryFee.total.toLocaleString()}</span>
+                        <span className="text-muted-foreground">{t.notaryFee}</span>
+                        <span className="font-medium">€{formatNumber(stats.breakdown.property.notaryFee.total)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Lawyer Fee (1% + VAT)</span>
-                        <span className="font-medium">€{stats.breakdown.property.lawyerFee.total.toLocaleString()}</span>
+                        <span className="text-muted-foreground">{t.lawyerFee}</span>
+                        <span className="font-medium">€{formatNumber(stats.breakdown.property.lawyerFee.total)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Gov Registration (0.8%)</span>
-                        <span className="font-medium">€{stats.breakdown.property.governmentRegistration.toLocaleString()}</span>
+                        <span className="text-muted-foreground">{t.govRegistration}</span>
+                        <span className="font-medium">€{formatNumber(stats.breakdown.property.governmentRegistration)}</span>
                       </div>
                       <div className="border-t pt-2 flex justify-between font-bold text-primary">
-                        <span>Total Property Costs</span>
-                        <span>€{stats.breakdown.property.total.toLocaleString()}</span>
+                        <span>{t.totalProperty}</span>
+                        <span>€{formatNumber(stats.breakdown.property.total)}</span>
                       </div>
                     </div>
                   </TabsContent>
@@ -496,38 +531,38 @@ export default function GreeceGoldenVisaCalculator() {
                   <TabsContent value="permit" className="space-y-3 pt-4">
                     <div className="space-y-2.5">
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Application Preparation</span>
-                        <span className="font-medium">€{stats.breakdown.permit.permitApplicationPrep.toLocaleString()}</span>
+                        <span className="text-muted-foreground">{t.applicationPrep}</span>
+                        <span className="font-medium">€{formatNumber(stats.breakdown.permit.permitApplicationPrep)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Main Applicant Card</span>
-                        <span className="font-medium">€{stats.breakdown.permit.permitCardMain.toLocaleString()}</span>
+                        <span className="text-muted-foreground">{t.mainCard}</span>
+                        <span className="font-medium">€{formatNumber(stats.breakdown.permit.permitCardMain)}</span>
                       </div>
                       {stats.breakdown.permit.permitCardDependents > 0 && (
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">
-                            Children Cards ({children15Plus + childrenUnder15})
+                            {t.childrenCards} ({children15Plus + childrenUnder15})
                           </span>
-                          <span className="font-medium">€{stats.breakdown.permit.permitCardDependents.toLocaleString()}</span>
+                          <span className="font-medium">€{formatNumber(stats.breakdown.permit.permitCardDependents)}</span>
                         </div>
                       )}
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Health Insurance ({stats.totalFamilyMembers})</span>
-                        <span className="font-medium">€{stats.breakdown.permit.healthInsurance.toLocaleString()}</span>
+                        <span className="text-muted-foreground">{t.healthInsurance} ({stats.totalFamilyMembers})</span>
+                        <span className="font-medium">€{formatNumber(stats.breakdown.permit.healthInsurance)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Translation Costs</span>
-                        <span className="font-medium">€{stats.breakdown.permit.translationCosts.toLocaleString()}</span>
+                        <span className="text-muted-foreground">{t.translationCosts}</span>
+                        <span className="font-medium">€{formatNumber(stats.breakdown.permit.translationCosts)}</span>
                       </div>
                       {stats.breakdown.permit.expressProcessingFee > 0 && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Express Processing</span>
-                          <span className="font-medium">€{stats.breakdown.permit.expressProcessingFee.toLocaleString()}</span>
+                          <span className="text-muted-foreground">{t.expressProcessing}</span>
+                          <span className="font-medium">€{formatNumber(stats.breakdown.permit.expressProcessingFee)}</span>
                         </div>
                       )}
                       <div className="border-t pt-2 flex justify-between font-bold text-primary">
-                        <span>Total Permit Costs</span>
-                        <span>€{stats.breakdown.permit.total.toLocaleString()}</span>
+                        <span>{t.totalPermit}</span>
+                        <span>€{formatNumber(stats.breakdown.permit.total)}</span>
                       </div>
                     </div>
                   </TabsContent>
@@ -535,23 +570,23 @@ export default function GreeceGoldenVisaCalculator() {
                   <TabsContent value="additional" className="space-y-3 pt-4">
                     <div className="space-y-2.5">
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Bank Account & Tax Number</span>
-                        <span className="font-medium">€{stats.breakdown.additional.bankAccountTaxNumber.toLocaleString()}</span>
+                        <span className="text-muted-foreground">{t.bankAccount}</span>
+                        <span className="font-medium">€{formatNumber(stats.breakdown.additional.bankAccountTaxNumber)}</span>
                       </div>
                       {stats.breakdown.additional.powerOfAttorneyFee > 0 && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Power of Attorney (+ VAT)</span>
-                          <span className="font-medium">€{stats.breakdown.additional.powerOfAttorneyFee.toLocaleString()}</span>
+                          <span className="text-muted-foreground">{t.powerOfAttorney}</span>
+                          <span className="font-medium">€{formatNumber(stats.breakdown.additional.powerOfAttorneyFee)}</span>
                         </div>
                       )}
                       <div className="border-t pt-2 flex justify-between font-bold text-primary">
-                        <span>Total Additional Costs</span>
-                        <span>€{stats.breakdown.additional.total.toLocaleString()}</span>
+                        <span>{t.totalAdditional}</span>
+                        <span>€{formatNumber(stats.breakdown.additional.total)}</span>
                       </div>
                       <div className="mt-3 p-3 bg-muted rounded-lg text-sm text-foreground">
-                        <p className="font-medium mb-1">Not Included:</p>
+                        <p className="font-medium mb-1">{t.notIncluded}</p>
                         <ul className="text-xs space-y-1">
-                          <li>• Legal check fee (€150) - only if property not suitable</li>
+                          <li>• {t.legalCheck}</li>
                         </ul>
                       </div>
                     </div>
@@ -564,25 +599,25 @@ export default function GreeceGoldenVisaCalculator() {
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Banknote className="w-5 h-5" />
-                  Cost Summary
+                  {t.costSummary}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium">Property & Acquisition</span>
-                  <span className="font-bold">€{(stats.purchasePrice + stats.totalPropertyCosts).toLocaleString()}</span>
+                  <span className="font-medium">{t.propertyAndAcquisition}</span>
+                  <span className="font-bold">€{formatNumber(stats.purchasePrice + stats.totalPropertyCosts)}</span>
                 </div>
                 <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium">Residence Permit Process</span>
-                  <span className="font-bold">€{stats.totalPermitCosts.toLocaleString()}</span>
+                  <span className="font-medium">{t.residencePermitProcess}</span>
+                  <span className="font-bold">€{formatNumber(stats.totalPermitCosts)}</span>
                 </div>
                 <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium">Additional Services</span>
-                  <span className="font-bold">€{stats.totalAdditionalCosts.toLocaleString()}</span>
+                  <span className="font-medium">{t.additionalServices}</span>
+                  <span className="font-bold">€{formatNumber(stats.totalAdditionalCosts)}</span>
                 </div>
                 <div className="flex justify-between py-3 bg-primary/10 px-3 rounded-lg mt-2">
-                  <span className="font-bold text-lg">GRAND TOTAL</span>
-                  <span className="font-bold text-lg text-primary">€{stats.grandTotal.toLocaleString()}</span>
+                  <span className="font-bold text-lg">{t.grandTotal}</span>
+                  <span className="font-bold text-lg text-primary">€{formatNumber(stats.grandTotal)}</span>
                 </div>
               </CardContent>
             </Card>
@@ -592,42 +627,39 @@ export default function GreeceGoldenVisaCalculator() {
         {/* Footer Information */}
         <Card className="shadow-lg bg-card">
           <CardHeader>
-            <CardTitle>Key Information & Benefits</CardTitle>
+            <CardTitle>{t.keyInfo}</CardTitle>
           </CardHeader>
           <CardContent className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Visa Benefits</h4>
+              <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{t.visaBenefits}</h4>
               <ul className="text-sm space-y-1.5 list-disc list-inside text-muted-foreground">
-                <li>5-year renewable residency permit</li>
-                <li>Visa-free Schengen travel</li>
-                <li>No minimum stay requirement</li>
-                <li>Family inclusion (spouse, children under 21)</li>
+                {t.benefits.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
             <div className="space-y-2">
-              <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Property Requirements</h4>
+              <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{t.propertyReqs}</h4>
               <ul className="text-sm space-y-1.5 list-disc list-inside text-muted-foreground">
-                <li>Single property ≥ 120sqm required</li>
-                <li>Must be held for duration of permit</li>
-                <li>No short-term rental allowed</li>
-                <li>Can be resold after permit granted</li>
+                {t.propertyReqList.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
             <div className="space-y-2">
-              <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Processing & Timeline</h4>
+              <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{t.processingTimeline}</h4>
               <ul className="text-sm space-y-1.5 list-disc list-inside text-muted-foreground">
-                <li>Processing: 6-8 months typically</li>
-                <li>Express option available (+€3,000)</li>
-                <li>No work rights (investments allowed)</li>
-                <li>Tax residency: 183+ days/year</li>
+                {t.processingList.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
           </CardContent>
         </Card>
 
         <div className="text-center text-sm text-muted-foreground pb-8 space-y-2">
-          <p className="font-medium">All fees based on official Law 5100/2024 and current market rates (2026).</p>
-          <p>This calculator provides detailed estimates. Consult with our team of licensed immigration attorneys and tax advisors for personalized guidance.</p>
+          <p className="font-medium">{t.footerLaw}</p>
+          <p>{t.footerDisclaimer}</p>
         </div>
       </div>
     </div>
