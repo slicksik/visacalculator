@@ -11,12 +11,13 @@ export const metadata: Metadata = {
   description: "Calculate your total investment costs for Greek residency by investment",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const localeCookie = cookies().get("NEXT_LOCALE")?.value;
+  const cookieStore = await cookies();
+  const localeCookie = cookieStore.get("NEXT_LOCALE")?.value;
   const locale = isLocale(localeCookie) ? localeCookie : defaultLocale;
 
   return (
