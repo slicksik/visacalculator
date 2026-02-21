@@ -301,12 +301,11 @@ export default function GreeceGoldenVisaCalculator({ locale }: Props) {
   const totalFlashClass = flashTotals ? "bg-emerald-50 dark:bg-emerald-900/20" : "";
 
   const InfoTip = ({ text }: { text: string }) => (
-    <span
-      className="inline-flex items-center text-muted-foreground"
-      title={text}
-      aria-label={text}
-    >
-      <HelpCircle className="w-3.5 h-3.5 ml-1" />
+    <span className="relative inline-flex items-center group">
+      <HelpCircle className="w-3.5 h-3.5 ml-1 text-muted-foreground" aria-hidden="true" />
+      <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-md border border-border bg-popover px-2 py-1 text-xs text-popover-foreground opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+        {text}
+      </span>
     </span>
   );
 
